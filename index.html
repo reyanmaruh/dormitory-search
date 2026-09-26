@@ -160,53 +160,62 @@
   main{max-width:1180px;margin:0 auto;padding:0 20px 90px}
   .shell{margin-top:-72px;position:relative;z-index:5}
 
-  /* ---------- STATUS BAR ---------- */
-  .loaded{
-    display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  /* ---------- LOADING SPINNER ---------- */
+  .loading-panel{
+    display:flex;align-items:center;justify-content:center;gap:16px;
     background:var(--card);
     border-radius:var(--radius);
-    padding:18px 22px;
+    padding:34px 24px;
     box-shadow:var(--shadow-lg);
     border:1px solid var(--line);
     animation:slideIn .45s cubic-bezier(.2,.7,.3,1) both;
   }
   @keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
-  .loaded .ok{
-    width:44px;height:44px;border-radius:13px;flex:none;
-    display:flex;align-items:center;justify-content:center;
-    font-size:19px;font-weight:800;
-    background:linear-gradient(135deg,#d1fae5,#a7f3d0);
-    color:#059669;
-    box-shadow:0 6px 14px -6px rgba(16,185,129,.55), inset 0 1px 0 rgba(255,255,255,.6);
+  .spinner{
+    width:44px;height:44px;flex:none;
+    border-radius:50%;
+    border:4px solid #e0e7ff;
+    border-top-color:var(--accent);
+    animation:spin .9s linear infinite;
   }
-  .loaded.loading .ok{
-    background:linear-gradient(135deg,#e0e7ff,#c7d2fe);
-    color:#4f46e5;
-    box-shadow:0 6px 14px -6px rgba(79,70,229,.55), inset 0 1px 0 rgba(255,255,255,.6);
-    animation:spinIcon 1.6s linear infinite;
-  }
-  @keyframes spinIcon{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
 
-  .loaded .txt{flex:1;min-width:220px}
-  .loaded .txt b{
-    font-size:14.5px;font-weight:700;color:var(--ink);
-    letter-spacing:-.01em;
+  .loading-text{
     font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:15px;font-weight:700;
+    color:var(--ink);
+    letter-spacing:-.01em;
   }
-  .loaded .txt small{
-    display:block;color:var(--muted);font-size:12.5px;
-    margin-top:4px;line-height:1.55;
+  .loading-text small{
+    display:block;font-family:'Inter',sans-serif;
+    font-size:12.5px;font-weight:500;
+    color:var(--muted);
+    margin-top:3px;
+    letter-spacing:0;
   }
-  .loaded .txt small b{color:var(--accent);font-weight:700;font-size:12.5px;font-family:inherit}
 
-  .btn{
-    border:0;cursor:pointer;font-family:inherit;font-weight:600;font-size:13.5px;
-    padding:11px 18px;border-radius:12px;transition:.2s;
-    letter-spacing:-.005em;
+  /* ---------- NOTICE ---------- */
+  .notice{
+    margin-top:20px;padding:16px 20px;border-radius:16px;
+    background:linear-gradient(120deg,#fff7ed,#ffedd5);
+    border:1px solid #fed7aa;
+    color:#7c2d12;
+    font-size:13.5px;line-height:1.6;
+    display:flex;gap:14px;align-items:flex-start;
+    box-shadow:0 6px 20px -12px rgba(234,88,12,.35);
+    animation:slideIn .45s cubic-bezier(.2,.7,.3,1) both;
   }
-  .btn-ghost{background:#f1f5f9;color:#475569}
-  .btn-ghost:hover{background:#e2e8f0;color:#0f172a;transform:translateY(-1px)}
+  .notice .icon{
+    width:34px;height:34px;border-radius:10px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    background:#fff;font-size:17px;
+    box-shadow:0 4px 10px -4px rgba(234,88,12,.4);
+  }
+  .notice b{color:#431407;font-weight:700;display:block;margin-bottom:3px;font-size:14px}
+  .notice p{font-size:13px;color:#7c2d12;line-height:1.55}
+  .notice ul{margin:6px 0 0 18px;padding:0;font-size:12.5px}
+  .notice li{margin-bottom:2px;font-family:'JetBrains Mono',monospace}
 
   /* ---------- UPLOAD DROP ---------- */
   .drop{
@@ -265,37 +274,16 @@
   }
   #fileInput{display:none}
 
-  /* ---------- NOTICE ---------- */
-  .notice{
-    margin-top:20px;padding:16px 20px;border-radius:16px;
-    background:linear-gradient(120deg,#fff7ed,#ffedd5);
-    border:1px solid #fed7aa;
-    color:#7c2d12;
-    font-size:13.5px;line-height:1.6;
-    display:flex;gap:14px;align-items:flex-start;
-    box-shadow:0 6px 20px -12px rgba(234,88,12,.35);
-    animation:slideIn .45s cubic-bezier(.2,.7,.3,1) both;
-  }
-  .notice .icon{
-    width:34px;height:34px;border-radius:10px;flex:none;
-    display:flex;align-items:center;justify-content:center;
-    background:#fff;font-size:17px;
-    box-shadow:0 4px 10px -4px rgba(234,88,12,.4);
-  }
-  .notice b{color:#431407;font-weight:700;display:block;margin-bottom:3px;font-size:14px}
-  .notice p{font-size:13px;color:#7c2d12;line-height:1.55}
-  .notice ul{margin:6px 0 0 18px;padding:0;font-size:12.5px}
-  .notice li{margin-bottom:2px;font-family:'JetBrains Mono',monospace}
-
   /* ---------- SEARCH ---------- */
   .search-box{
-    display:flex;align-items:center;gap:14px;margin-top:20px;
+    display:flex;align-items:center;gap:14px;
     background:var(--card);
     border-radius:var(--radius);
     padding:10px 12px 10px 20px;
     box-shadow:var(--shadow-lg);
     border:1px solid var(--line);
     transition:box-shadow .25s, border-color .25s;
+    animation:slideIn .5s cubic-bezier(.2,.7,.3,1) both;
   }
   .search-box:focus-within{
     border-color:#c7d2fe;
@@ -323,6 +311,7 @@
   .filters{
     display:flex;flex-wrap:wrap;gap:10px;align-items:center;
     margin-top:18px;
+    animation:slideIn .55s cubic-bezier(.2,.7,.3,1) both;
   }
   .filter-label{
     font-size:11px;font-weight:800;letter-spacing:.1em;
@@ -600,17 +589,15 @@
   .hidden{display:none !important}
 
   /* =========================================================
-     INFO BUTTON (FLOATING)
+     INFO BUTTON
      ========================================================= */
   .info-fab{
     position:fixed;
-    bottom:24px;
-    right:24px;
+    bottom:24px;right:24px;
     z-index:900;
     width:60px;height:60px;
     border-radius:50%;
-    border:0;
-    cursor:pointer;
+    border:0;cursor:pointer;
     background:linear-gradient(135deg,#6366f1,#a855f7);
     color:#fff;
     display:flex;align-items:center;justify-content:center;
@@ -622,8 +609,7 @@
   }
   .info-fab::before{
     content:"";
-    position:absolute;
-    inset:-4px;
+    position:absolute;inset:-4px;
     border-radius:50%;
     background:radial-gradient(circle, rgba(139,92,246,.55) 0%, transparent 70%);
     z-index:-1;
@@ -643,25 +629,15 @@
   }
   .info-fab:active{transform:scale(.96)}
   .info-fab svg{width:28px;height:28px}
-
-  /* Tooltip */
   .info-fab::after{
     content:"Data disclaimer";
-    position:absolute;
-    right:74px;
-    top:50%;
+    position:absolute;right:74px;top:50%;
     transform:translateY(-50%) translateX(6px);
-    background:#0b1220;
-    color:#fff;
-    font-size:12.5px;
-    font-family:'Inter',sans-serif;
-    font-weight:600;
-    letter-spacing:-.005em;
-    padding:8px 13px;
-    border-radius:10px;
-    white-space:nowrap;
-    opacity:0;
-    pointer-events:none;
+    background:#0b1220;color:#fff;
+    font-size:12.5px;font-family:'Inter',sans-serif;
+    font-weight:600;letter-spacing:-.005em;
+    padding:8px 13px;border-radius:10px;
+    white-space:nowrap;opacity:0;pointer-events:none;
     transition:.2s;
     box-shadow:0 8px 20px -8px rgba(15,23,42,.5);
   }
@@ -679,29 +655,20 @@
      MODAL
      ========================================================= */
   .modal-backdrop{
-    position:fixed;
-    inset:0;
-    z-index:1000;
+    position:fixed;inset:0;z-index:1000;
     background:rgba(11,18,32,.45);
     backdrop-filter:blur(8px) saturate(120%);
     -webkit-backdrop-filter:blur(8px) saturate(120%);
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    display:flex;align-items:center;justify-content:center;
     padding:24px;
-    opacity:0;
-    visibility:hidden;
+    opacity:0;visibility:hidden;
     transition:opacity .28s ease, visibility .28s ease;
   }
-  .modal-backdrop.open{
-    opacity:1;
-    visibility:visible;
-  }
+  .modal-backdrop.open{opacity:1;visibility:visible}
 
   .modal{
     position:relative;
-    width:100%;
-    max-width:560px;
+    width:100%;max-width:560px;
     max-height:calc(100vh - 48px);
     background:var(--card);
     border-radius:22px;
@@ -712,8 +679,7 @@
     transform:translateY(20px) scale(.96);
     opacity:0;
     transition:transform .35s cubic-bezier(.2,.7,.3,1), opacity .3s ease;
-    display:flex;
-    flex-direction:column;
+    display:flex;flex-direction:column;
   }
   .modal-backdrop.open .modal{
     transform:translateY(0) scale(1);
@@ -737,51 +703,37 @@
   }
   .modal-header h2{
     font-size:17.5px;font-weight:800;letter-spacing:-.02em;
-    color:var(--ink);
-    line-height:1.2;
+    color:var(--ink);line-height:1.2;
   }
   .modal-header p{
-    font-size:12.5px;color:var(--muted);font-weight:500;
-    margin-top:3px;
+    font-size:12.5px;color:var(--muted);font-weight:500;margin-top:3px;
   }
   .modal-close{
     margin-left:auto;
-    width:38px;height:38px;
-    border-radius:11px;
-    border:0;
-    background:#f1f5f9;
-    color:#64748b;
-    font-size:18px;line-height:1;
-    cursor:pointer;
+    width:38px;height:38px;border-radius:11px;
+    border:0;background:#f1f5f9;color:#64748b;
+    font-size:18px;line-height:1;cursor:pointer;
     display:flex;align-items:center;justify-content:center;
-    transition:.18s;
-    flex:none;
+    transition:.18s;flex:none;
   }
   .modal-close:hover{
-    background:#e2e8f0;
-    color:#0f172a;
-    transform:rotate(90deg);
+    background:#e2e8f0;color:#0f172a;transform:rotate(90deg);
   }
 
   .modal-body{
     padding:22px 24px 24px;
     overflow-y:auto;
-    font-size:14px;
-    line-height:1.65;
+    font-size:14px;line-height:1.65;
     color:var(--ink-2);
   }
   .modal-body p{margin-bottom:14px}
   .modal-body p:last-child{margin-bottom:0}
   .modal-body b{color:var(--ink);font-weight:700}
   .modal-body .callout{
-    margin-top:16px;
-    padding:14px 16px;
-    border-radius:13px;
+    margin-top:16px;padding:14px 16px;border-radius:13px;
     background:linear-gradient(120deg,#eef2ff,#f5f3ff);
     border:1px solid #e0e7ff;
-    font-size:13.5px;
-    color:#3730a3;
-    line-height:1.6;
+    font-size:13.5px;color:#3730a3;line-height:1.6;
   }
   .modal-body .callout b{color:#312e81;font-weight:800}
 
@@ -798,8 +750,7 @@
     background:linear-gradient(120deg,var(--accent),var(--accent-2));
     color:#fff;
     box-shadow:0 10px 24px -10px rgba(79,70,229,.8), inset 0 1px 0 rgba(255,255,255,.2);
-    transition:.18s;
-    letter-spacing:-.005em;
+    transition:.18s;letter-spacing:-.005em;
   }
   .modal-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
 
@@ -817,7 +768,8 @@
     .stats > div{padding:10px 14px;font-size:12.5px}
     .search-box{padding:8px 10px 8px 16px;gap:10px}
     #search{font-size:16px;padding:13px 0}
-    .loaded{padding:16px 18px;gap:14px}
+    .loading-panel{padding:28px 20px;gap:14px}
+    .spinner{width:38px;height:38px;border-width:3.5px}
     .modal-header{padding:18px 18px 16px}
     .modal-body{padding:18px}
     .modal-footer{padding:12px 18px 16px}
@@ -841,12 +793,12 @@
 <main>
   <div class="shell">
 
-    <!-- Loading state -->
-    <div id="uploadPanel" class="loaded loading">
-      <div class="ok">↻</div>
-      <div class="txt">
-        <b id="loadingTitle">Loading student data…</b>
-        <small id="loadingSub">Reading CSV files from the datas folder.</small>
+    <!-- Loading spinner (only shown on initial load) -->
+    <div id="loadingPanel" class="loading-panel">
+      <div class="spinner"></div>
+      <div class="loading-text">
+        Loading student data
+        <small>Reading CSV files from the datas folder…</small>
       </div>
     </div>
 
@@ -859,7 +811,7 @@
       </div>
     </div>
 
-    <!-- Upload drop (hidden until needed) -->
+    <!-- Upload drop (hidden unless auto-load fails) -->
     <div id="dropPanel" class="hidden">
       <div class="drop" id="dropZone">
         <div class="ic">📄</div>
@@ -870,17 +822,7 @@
       <input type="file" id="fileInput" accept=".csv,text/csv" multiple>
     </div>
 
-    <!-- Loaded bar -->
-    <div id="loadedPanel" class="loaded hidden">
-      <div class="ok">✓</div>
-      <div class="txt">
-        <b id="loadedTitle">Data loaded</b>
-        <small id="loadedSub"></small>
-      </div>
-      <button class="btn btn-ghost" id="reloadBtn">Load different files</button>
-    </div>
-
-    <!-- Search -->
+    <!-- Search area -->
     <div id="searchPanel" class="hidden">
       <div class="search-box">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
@@ -908,9 +850,7 @@
 
 <footer>Data is read entirely in your browser — nothing is uploaded to any server.</footer>
 
-<!-- =========================================================
-     FLOATING INFO BUTTON
-     ========================================================= -->
+<!-- FLOATING INFO BUTTON -->
 <button class="info-fab" id="infoFab" title="Data disclaimer" aria-label="Open data disclaimer">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <circle cx="12" cy="12" r="10"/>
@@ -919,9 +859,7 @@
   </svg>
 </button>
 
-<!-- =========================================================
-     MODAL: DATA DISCLAIMER
-     ========================================================= -->
+<!-- MODAL: DATA DISCLAIMER -->
 <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal" role="document">
     <div class="modal-header">
@@ -1005,27 +943,20 @@ const DATA_FILES = [
 let students = [];
 let rooms = {};
 let dupIds = new Set();
-let fileInfo = [];
 let activeYear = 'all';
 
 /* =========================================================
    DOM
    ========================================================= */
-const uploadPanel  = document.getElementById('uploadPanel');
+const loadingPanel = document.getElementById('loadingPanel');
 const noticeBox    = document.getElementById('noticeBox');
 const noticeTitle  = document.getElementById('noticeTitle');
 const noticeText   = document.getElementById('noticeText');
 const dropPanel    = document.getElementById('dropPanel');
 const dropZone     = document.getElementById('dropZone');
 const fileInput    = document.getElementById('fileInput');
-const loadedPanel  = document.getElementById('loadedPanel');
 const searchPanel  = document.getElementById('searchPanel');
 const resHeader    = document.getElementById('resHeader');
-const loadedTitle  = document.getElementById('loadedTitle');
-const loadedSub    = document.getElementById('loadedSub');
-const loadingTitle = document.getElementById('loadingTitle');
-const loadingSub   = document.getElementById('loadingSub');
-const reloadBtn    = document.getElementById('reloadBtn');
 const input        = document.getElementById('search');
 const clearBtn     = document.getElementById('clear');
 const results      = document.getElementById('results');
@@ -1057,12 +988,10 @@ infoFab.addEventListener('click', openModal);
 modalClose.addEventListener('click', closeModal);
 modalOk.addEventListener('click', closeModal);
 
-/* Close when clicking the dark backdrop (not the modal itself) */
 modalBackdrop.addEventListener('click', e => {
   if(e.target === modalBackdrop) closeModal();
 });
 
-/* Close with Escape key */
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape' && modalBackdrop.classList.contains('open')) closeModal();
 });
@@ -1072,7 +1001,6 @@ document.addEventListener('keydown', e => {
    ========================================================= */
 async function autoLoadAll(){
   students = [];
-  fileInfo = [];
 
   const missing = [];
 
@@ -1083,15 +1011,14 @@ async function autoLoadAll(){
 
       const text = await res.text();
       const parsed = parseCSV(text);
-      const added = ingestRows(parsed, entry.path, entry.year);
-
-      if(added > 0){
-        fileInfo.push({ name: entry.path, count: added, year: entry.year, sex: entry.sex });
-      }
+      ingestRows(parsed, entry.path, entry.year);
     } catch(err){
       missing.push(entry.path);
     }
   }
+
+  // Hide the loading spinner
+  loadingPanel.classList.add('hidden');
 
   if(students.length === 0){
     showUploadFallback(missing);
@@ -1106,7 +1033,6 @@ async function autoLoadAll(){
    MANUAL UPLOAD (fallback)
    ========================================================= */
 dropZone.addEventListener('click', () => fileInput.click());
-reloadBtn.addEventListener('click', () => fileInput.click());
 
 fileInput.addEventListener('change', e => {
   if(e.target.files.length) handleFiles(e.target.files);
@@ -1130,18 +1056,13 @@ async function handleFiles(fileList){
   if(!files.length){ alert('Please choose .csv files.'); return; }
 
   students = [];
-  fileInfo = [];
 
   try {
     for(const file of files){
       const text = await file.text();
       const parsed = parseCSV(text);
       const info = guessFromName(file.name);
-      const added = ingestRows(parsed, file.name, info.year, info.sex);
-
-      if(added > 0){
-        fileInfo.push({ name: file.name, count: added, year: info.year, sex: info.sex });
-      }
+      ingestRows(parsed, file.name, info.year);
     }
 
     if(!students.length) throw new Error('no-records');
@@ -1157,7 +1078,6 @@ async function handleFiles(fileList){
       "Please check the files and try again.";
     noticeBox.classList.remove('hidden');
     dropPanel.classList.remove('hidden');
-    loadedPanel.classList.add('hidden');
     searchPanel.classList.add('hidden');
     resHeader.classList.add('hidden');
   }
@@ -1241,11 +1161,9 @@ function buildIndex(){
 }
 
 /* =========================================================
-   SHOW LOADED
+   SHOW SEARCH UI (no success bar)
    ========================================================= */
 function showLoaded(missing){
-  uploadPanel.classList.add('hidden');
-  loadedPanel.classList.remove('hidden');
   searchPanel.classList.remove('hidden');
   resHeader.classList.remove('hidden');
 
@@ -1260,9 +1178,6 @@ function showLoaded(missing){
   }
 
   const total = students.length;
-  loadedTitle.textContent = `${total.toLocaleString()} student record${total === 1 ? '' : 's'} loaded`;
-  loadedSub.textContent = fileInfo.map(f => `${f.name} · ${f.count} rows`).join('  •  ');
-
   const depts   = new Set(students.map(s => s.dept).filter(Boolean));
   const roomSet = new Set(students.map(s => s.block + '|' + s.dorm));
   const fem     = students.filter(s => s.sex === 'F').length;
@@ -1340,10 +1255,8 @@ function buildQuickChips(){
    FRIENDLY FALLBACK
    ========================================================= */
 function showUploadFallback(missing){
-  uploadPanel.classList.add('hidden');
   noticeBox.classList.remove('hidden');
   dropPanel.classList.remove('hidden');
-  loadedPanel.classList.add('hidden');
   searchPanel.classList.add('hidden');
   resHeader.classList.add('hidden');
 
