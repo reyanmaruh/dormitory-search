@@ -286,6 +286,43 @@
   .notice ul{margin:6px 0 0 18px;padding:0;font-size:12.5px}
   .notice li{margin-bottom:2px;font-family:'JetBrains Mono',monospace}
 
+/* ---------- DISCLAIMER ---------- */
+.disclaimer{
+  margin-top:18px;
+  padding:16px 20px;
+  border-radius:16px;
+  background:linear-gradient(120deg,#eff6ff,#e0e7ff);
+  border:1px solid #c7d2fe;
+  color:#1e3a8a;
+  font-size:13.5px;
+  line-height:1.6;
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  box-shadow:0 8px 24px -14px rgba(59,130,246,.4);
+  animation:slideIn .5s cubic-bezier(.2,.7,.3,1) both;
+}
+.disclaimer .icon{
+  width:34px;height:34px;border-radius:10px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:#fff;font-size:17px;
+  box-shadow:0 4px 10px -4px rgba(59,130,246,.4);
+}
+.disclaimer b{
+  color:#1e3a8a;font-weight:700;
+  display:block;margin-bottom:4px;font-size:14px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  letter-spacing:-.01em;
+}
+.disclaimer p{
+  font-size:13px;color:#1e40af;line-height:1.6;margin:0;
+}
+.disclaimer p b{display:inline;color:#1e3a8a;font-weight:700;font-family:inherit;font-size:inherit;margin:0}
+
+@media (max-width:640px){
+  .disclaimer{padding:14px 16px;font-size:13px}
+}
+
   /* ---------- SEARCH ---------- */
   .search-box{
     display:flex;align-items:center;gap:14px;margin-top:20px;
@@ -629,6 +666,22 @@
     <p>Search any student by <b>Student ID</b>, name, department, block or dorm. Data loads automatically from the <b>datas/</b> folder.</p>
   </div>
 </header>
+
+<!-- Data disclaimer -->
+<div class="head-inner" style="margin-top:-40px;position:relative;z-index:6;padding:0 20px;">
+  <div class="disclaimer">
+    <div class="icon">ℹ️</div>
+    <div>
+      <b>Data Source &amp; Disclaimer</b>
+      <p>
+        All student dormitory placement data displayed in this tool is provided directly by the University.
+        The records are presented exactly as received, without modification.
+        Any inaccuracies, duplicates, or discrepancies in the results reflect the <b>source data</b> —
+        not the functionality of this application.
+      </p>
+    </div>
+  </div>
+</div>
 
 <main>
   <div class="shell">
