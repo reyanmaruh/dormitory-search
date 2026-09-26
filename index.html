@@ -52,6 +52,7 @@
     line-height:1.5;
     overflow-x:hidden;
   }
+  body.modal-open{overflow:hidden}
 
   h1,h2,h3,h4{font-family:'Plus Jakarta Sans','Inter',sans-serif;letter-spacing:-.02em}
   .mono{font-family:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;font-feature-settings:'zero'}
@@ -285,43 +286,6 @@
   .notice p{font-size:13px;color:#7c2d12;line-height:1.55}
   .notice ul{margin:6px 0 0 18px;padding:0;font-size:12.5px}
   .notice li{margin-bottom:2px;font-family:'JetBrains Mono',monospace}
-
-/* ---------- DISCLAIMER ---------- */
-.disclaimer{
-  margin-top:18px;
-  padding:16px 20px;
-  border-radius:16px;
-  background:linear-gradient(120deg,#eff6ff,#e0e7ff);
-  border:1px solid #c7d2fe;
-  color:#1e3a8a;
-  font-size:13.5px;
-  line-height:1.6;
-  display:flex;
-  gap:14px;
-  align-items:flex-start;
-  box-shadow:0 8px 24px -14px rgba(59,130,246,.4);
-  animation:slideIn .5s cubic-bezier(.2,.7,.3,1) both;
-}
-.disclaimer .icon{
-  width:34px;height:34px;border-radius:10px;flex:none;
-  display:flex;align-items:center;justify-content:center;
-  background:#fff;font-size:17px;
-  box-shadow:0 4px 10px -4px rgba(59,130,246,.4);
-}
-.disclaimer b{
-  color:#1e3a8a;font-weight:700;
-  display:block;margin-bottom:4px;font-size:14px;
-  font-family:'Plus Jakarta Sans',sans-serif;
-  letter-spacing:-.01em;
-}
-.disclaimer p{
-  font-size:13px;color:#1e40af;line-height:1.6;margin:0;
-}
-.disclaimer p b{display:inline;color:#1e3a8a;font-weight:700;font-family:inherit;font-size:inherit;margin:0}
-
-@media (max-width:640px){
-  .disclaimer{padding:14px 16px;font-size:13px}
-}
 
   /* ---------- SEARCH ---------- */
   .search-box{
@@ -635,6 +599,210 @@
 
   .hidden{display:none !important}
 
+  /* =========================================================
+     INFO BUTTON (FLOATING)
+     ========================================================= */
+  .info-fab{
+    position:fixed;
+    bottom:24px;
+    right:24px;
+    z-index:900;
+    width:60px;height:60px;
+    border-radius:50%;
+    border:0;
+    cursor:pointer;
+    background:linear-gradient(135deg,#6366f1,#a855f7);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:26px;font-weight:800;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    box-shadow:0 12px 30px -10px rgba(99,102,241,.9), 0 4px 12px -4px rgba(15,23,42,.25);
+    transition:transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s;
+    animation:infoPulse 2.4s ease-in-out infinite;
+  }
+  .info-fab::before{
+    content:"";
+    position:absolute;
+    inset:-4px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(139,92,246,.55) 0%, transparent 70%);
+    z-index:-1;
+    animation:infoGlow 2.4s ease-in-out infinite;
+  }
+  @keyframes infoPulse{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.05)}
+  }
+  @keyframes infoGlow{
+    0%,100%{transform:scale(1);opacity:.75}
+    50%{transform:scale(1.35);opacity:.25}
+  }
+  .info-fab:hover{
+    transform:scale(1.1) rotate(6deg);
+    box-shadow:0 16px 40px -10px rgba(99,102,241,1), 0 6px 16px -4px rgba(15,23,42,.3);
+  }
+  .info-fab:active{transform:scale(.96)}
+  .info-fab svg{width:28px;height:28px}
+
+  /* Tooltip */
+  .info-fab::after{
+    content:"Data disclaimer";
+    position:absolute;
+    right:74px;
+    top:50%;
+    transform:translateY(-50%) translateX(6px);
+    background:#0b1220;
+    color:#fff;
+    font-size:12.5px;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    letter-spacing:-.005em;
+    padding:8px 13px;
+    border-radius:10px;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    transition:.2s;
+    box-shadow:0 8px 20px -8px rgba(15,23,42,.5);
+  }
+  .info-fab:hover::after{
+    opacity:1;
+    transform:translateY(-50%) translateX(0);
+  }
+
+  @media (max-width:640px){
+    .info-fab{width:54px;height:54px;bottom:18px;right:18px;font-size:23px}
+    .info-fab::after{display:none}
+  }
+
+  /* =========================================================
+     MODAL
+     ========================================================= */
+  .modal-backdrop{
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    background:rgba(11,18,32,.45);
+    backdrop-filter:blur(8px) saturate(120%);
+    -webkit-backdrop-filter:blur(8px) saturate(120%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .28s ease, visibility .28s ease;
+  }
+  .modal-backdrop.open{
+    opacity:1;
+    visibility:visible;
+  }
+
+  .modal{
+    position:relative;
+    width:100%;
+    max-width:560px;
+    max-height:calc(100vh - 48px);
+    background:var(--card);
+    border-radius:22px;
+    box-shadow:
+      0 40px 90px -30px rgba(15,23,42,.55),
+      0 12px 30px -12px rgba(15,23,42,.35);
+    overflow:hidden;
+    transform:translateY(20px) scale(.96);
+    opacity:0;
+    transition:transform .35s cubic-bezier(.2,.7,.3,1), opacity .3s ease;
+    display:flex;
+    flex-direction:column;
+  }
+  .modal-backdrop.open .modal{
+    transform:translateY(0) scale(1);
+    opacity:1;
+  }
+
+  .modal-header{
+    display:flex;align-items:center;gap:14px;
+    padding:22px 24px 18px;
+    background:
+      radial-gradient(400px 120px at 0% 0%, rgba(99,102,241,.08), transparent 70%),
+      linear-gradient(160deg,#fbfcfe,#f4f6fb);
+    border-bottom:1px solid var(--line-2);
+  }
+  .modal-header .icon{
+    width:46px;height:46px;border-radius:14px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#6366f1,#a855f7);
+    color:#fff;font-size:22px;
+    box-shadow:0 10px 22px -10px rgba(99,102,241,.9);
+  }
+  .modal-header h2{
+    font-size:17.5px;font-weight:800;letter-spacing:-.02em;
+    color:var(--ink);
+    line-height:1.2;
+  }
+  .modal-header p{
+    font-size:12.5px;color:var(--muted);font-weight:500;
+    margin-top:3px;
+  }
+  .modal-close{
+    margin-left:auto;
+    width:38px;height:38px;
+    border-radius:11px;
+    border:0;
+    background:#f1f5f9;
+    color:#64748b;
+    font-size:18px;line-height:1;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:.18s;
+    flex:none;
+  }
+  .modal-close:hover{
+    background:#e2e8f0;
+    color:#0f172a;
+    transform:rotate(90deg);
+  }
+
+  .modal-body{
+    padding:22px 24px 24px;
+    overflow-y:auto;
+    font-size:14px;
+    line-height:1.65;
+    color:var(--ink-2);
+  }
+  .modal-body p{margin-bottom:14px}
+  .modal-body p:last-child{margin-bottom:0}
+  .modal-body b{color:var(--ink);font-weight:700}
+  .modal-body .callout{
+    margin-top:16px;
+    padding:14px 16px;
+    border-radius:13px;
+    background:linear-gradient(120deg,#eef2ff,#f5f3ff);
+    border:1px solid #e0e7ff;
+    font-size:13.5px;
+    color:#3730a3;
+    line-height:1.6;
+  }
+  .modal-body .callout b{color:#312e81;font-weight:800}
+
+  .modal-footer{
+    padding:14px 24px 20px;
+    display:flex;justify-content:flex-end;gap:10px;
+    background:#fbfcfe;
+    border-top:1px solid var(--line-2);
+  }
+  .modal-btn{
+    border:0;cursor:pointer;
+    font-family:inherit;font-weight:600;font-size:13.5px;
+    padding:11px 22px;border-radius:12px;
+    background:linear-gradient(120deg,var(--accent),var(--accent-2));
+    color:#fff;
+    box-shadow:0 10px 24px -10px rgba(79,70,229,.8), inset 0 1px 0 rgba(255,255,255,.2);
+    transition:.18s;
+    letter-spacing:-.005em;
+  }
+  .modal-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+
   /* ---------- RESPONSIVE ---------- */
   @media (max-width:640px){
     header{padding:32px 18px 106px}
@@ -650,6 +818,9 @@
     .search-box{padding:8px 10px 8px 16px;gap:10px}
     #search{font-size:16px;padding:13px 0}
     .loaded{padding:16px 18px;gap:14px}
+    .modal-header{padding:18px 18px 16px}
+    .modal-body{padding:18px}
+    .modal-footer{padding:12px 18px 16px}
   }
 
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
@@ -666,22 +837,6 @@
     <p>Search any student by <b>Student ID</b>, name, department, block or dorm. Data loads automatically from the <b>datas/</b> folder.</p>
   </div>
 </header>
-
-<!-- Data disclaimer -->
-<div class="head-inner" style="margin-top:-40px;position:relative;z-index:6;padding:0 20px;">
-  <div class="disclaimer">
-    <div class="icon">ℹ️</div>
-    <div>
-      <b>Data Source &amp; Disclaimer</b>
-      <p>
-        All student dormitory placement data displayed in this tool is provided directly by the University.
-        The records are presented exactly as received, without modification.
-        Any inaccuracies, duplicates, or discrepancies in the results reflect the <b>source data</b> —
-        not the functionality of this application.
-      </p>
-    </div>
-  </div>
-</div>
 
 <main>
   <div class="shell">
@@ -735,7 +890,6 @@
 
       <div class="filters" id="yearFilters">
         <span class="filter-label">Year</span>
-        <!-- year buttons built dynamically -->
       </div>
 
       <div class="chips" id="quickChips"></div>
@@ -753,6 +907,59 @@
 </main>
 
 <footer>Data is read entirely in your browser — nothing is uploaded to any server.</footer>
+
+<!-- =========================================================
+     FLOATING INFO BUTTON
+     ========================================================= -->
+<button class="info-fab" id="infoFab" title="Data disclaimer" aria-label="Open data disclaimer">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="12" y1="11" x2="12" y2="16"/>
+    <circle cx="12" cy="7.5" r="0.6" fill="currentColor"/>
+  </svg>
+</button>
+
+<!-- =========================================================
+     MODAL: DATA DISCLAIMER
+     ========================================================= -->
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal" role="document">
+    <div class="modal-header">
+      <div class="icon">ℹ</div>
+      <div>
+        <h2 id="modalTitle">Data Source &amp; Disclaimer</h2>
+        <p>Please read before using the search tool</p>
+      </div>
+      <button class="modal-close" id="modalClose" aria-label="Close disclaimer">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <p>
+        All student dormitory placement data displayed in this search tool is
+        <b>provided directly by the University</b>. The records are presented
+        exactly as received, without any modification, correction, or
+        reorganization by this application.
+      </p>
+
+      <p>
+        This tool is designed only to help you <b>find and view</b> the
+        information that already exists in the source files. It does not
+        generate, validate, or alter any student record.
+      </p>
+
+      <div class="callout">
+        <b>Please note:</b> Any inaccuracies, duplicates, missing entries, or
+        discrepancies you may notice in the results reflect the
+        <b>source data</b> provided by the University — not the functionality
+        of this application.
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="modal-btn" id="modalOk">I understand</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* =========================================================
@@ -782,9 +989,6 @@ function parseCSV(text){
 
 /* =========================================================
    AUTO-LOAD CONFIG
-   =========================================================
-   All six files live inside the "datas" folder next to this HTML.
-   Filenames must match exactly (including spaces).
    ========================================================= */
 const DATA_FILES = [
   { path: 'datas/2nd male.csv',   year: 2, sex: 'M' },
@@ -798,11 +1002,11 @@ const DATA_FILES = [
 /* =========================================================
    STATE
    ========================================================= */
-let students = [];        // all records (with .year added)
-let rooms = {};           // block|dorm|sex -> [students]
-let dupIds = new Set();   // duplicate Student IDs
-let fileInfo = [];        // [{name, count, year, sex}]
-let activeYear = 'all';   // 'all' | 2 | 3 | 4
+let students = [];
+let rooms = {};
+let dupIds = new Set();
+let fileInfo = [];
+let activeYear = 'all';
 
 /* =========================================================
    DOM
@@ -833,6 +1037,37 @@ const warnBox      = document.getElementById('warnBox');
 const yearFilters  = document.getElementById('yearFilters');
 
 /* =========================================================
+   MODAL
+   ========================================================= */
+const infoFab       = document.getElementById('infoFab');
+const modalBackdrop = document.getElementById('modalBackdrop');
+const modalClose    = document.getElementById('modalClose');
+const modalOk       = document.getElementById('modalOk');
+
+function openModal(){
+  modalBackdrop.classList.add('open');
+  document.body.classList.add('modal-open');
+}
+function closeModal(){
+  modalBackdrop.classList.remove('open');
+  document.body.classList.remove('modal-open');
+}
+
+infoFab.addEventListener('click', openModal);
+modalClose.addEventListener('click', closeModal);
+modalOk.addEventListener('click', closeModal);
+
+/* Close when clicking the dark backdrop (not the modal itself) */
+modalBackdrop.addEventListener('click', e => {
+  if(e.target === modalBackdrop) closeModal();
+});
+
+/* Close with Escape key */
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && modalBackdrop.classList.contains('open')) closeModal();
+});
+
+/* =========================================================
    AUTO-LOAD
    ========================================================= */
 async function autoLoadAll(){
@@ -840,7 +1075,6 @@ async function autoLoadAll(){
   fileInfo = [];
 
   const missing = [];
-  let loadedCount = 0;
 
   for(const entry of DATA_FILES){
     try {
@@ -853,7 +1087,6 @@ async function autoLoadAll(){
 
       if(added > 0){
         fileInfo.push({ name: entry.path, count: added, year: entry.year, sex: entry.sex });
-        loadedCount++;
       }
     } catch(err){
       missing.push(entry.path);
@@ -861,7 +1094,6 @@ async function autoLoadAll(){
   }
 
   if(students.length === 0){
-    // Nothing loaded — show fallback upload UI
     showUploadFallback(missing);
     return;
   }
@@ -904,8 +1136,6 @@ async function handleFiles(fileList){
     for(const file of files){
       const text = await file.text();
       const parsed = parseCSV(text);
-
-      // Try to guess year & sex from filename (e.g. "3rd male.csv")
       const info = guessFromName(file.name);
       const added = ingestRows(parsed, file.name, info.year, info.sex);
 
@@ -933,7 +1163,6 @@ async function handleFiles(fileList){
   }
 }
 
-/* Guess year & sex from filename */
 function guessFromName(name){
   const n = name.toLowerCase();
   let year = null;
@@ -950,7 +1179,6 @@ function guessFromName(name){
 function ingestRows(parsed, sourceName, yearHint, sexHint){
   if(!parsed || !parsed.length) return 0;
 
-  // Find header row
   let headerIdx = -1;
   for(let i = 0; i < Math.min(parsed.length, 5); i++){
     const joined = parsed[i].map(c => c.trim().toLowerCase()).join('|');
@@ -1033,9 +1261,7 @@ function showLoaded(missing){
 
   const total = students.length;
   loadedTitle.textContent = `${total.toLocaleString()} student record${total === 1 ? '' : 's'} loaded`;
-  loadedSub.textContent = fileInfo.map(f =>
-    `${f.name} · ${f.count} rows`
-  ).join('  •  ');
+  loadedSub.textContent = fileInfo.map(f => `${f.name} · ${f.count} rows`).join('  •  ');
 
   const depts   = new Set(students.map(s => s.dept).filter(Boolean));
   const roomSet = new Set(students.map(s => s.block + '|' + s.dorm));
@@ -1066,16 +1292,13 @@ function showLoaded(missing){
 }
 
 function buildYearFilters(){
-  // Count students per year
   const counts = { 2:0, 3:0, 4:0 };
   students.forEach(s => { if(s.year) counts[s.year]++; });
 
   const years = [2,3,4].filter(y => counts[y] > 0);
   yearFilters.innerHTML = '<span class="filter-label">Year</span>';
 
-  // "All" button
-  const allBtn = makeYearBtn('All', students.length, 'all');
-  yearFilters.appendChild(allBtn);
+  yearFilters.appendChild(makeYearBtn('All', students.length, 'all'));
 
   years.forEach(y => {
     yearFilters.appendChild(makeYearBtn(
@@ -1151,7 +1374,6 @@ function runSearch(){
   const q = input.value.trim().toUpperCase();
   clearBtn.classList.toggle('show', q.length > 0);
 
-  // Apply year filter
   let pool = students;
   if(activeYear !== 'all'){
     pool = students.filter(s => s.year === activeYear);
