@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dormitory Placement Search</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#f5f6fb;
+    --card:#ffffff;
+    --ink:#0b1220;
+    --ink-2:#1e293b;
+    --muted:#64748b;
+    --muted-2:#94a3b8;
+    --line:#e6eaf2;
+    --line-2:#eef1f7;
+    --accent:#4f46e5;
+    --accent-2:#7c3aed;
+    --accent-soft:#eef2ff;
+    --f:#db2777;
+    --f-soft:#fce7f3;
+    --m:#2563eb;
+    --m-soft:#dbeafe;
+
+    --y2:#0ea5e9; --y2-soft:#e0f2fe;
+    --y3:#f59e0b; --y3-soft:#fef3c7;
+    --y4:#10b981; --y4-soft:#d1fae5;
+
+    --shadow-sm:0 1px 2px rgba(15,23,42,.05);
+    --shadow-md:0 4px 12px -4px rgba(15,23,42,.08), 0 2px 4px -2px rgba(15,23,42,.04);
+    --shadow-lg:0 18px 42px -22px rgba(15,23,42,.32), 0 2px 6px -2px rgba(15,23,42,.05);
+    --shadow-xl:0 30px 70px -30px rgba(79,70,229,.35);
+    --radius:18px;
+    --radius-lg:24px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    font-feature-settings:'cv11','ss01','ss03';
+    background:var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+
+  h1,h2,h3,h4{font-family:'Plus Jakarta Sans','Inter',sans-serif;letter-spacing:-.02em}
+  .mono{font-family:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;font-feature-settings:'zero'}
+
+  /* =========================================================
+     HEADER
+     ========================================================= */
+  header{
+    position:relative;
+    background:
+      radial-gradient(1200px 500px at 15% -10%, #6366f1 0%, transparent 55%),
+      radial-gradient(900px 450px at 95% 10%, #a855f7 0%, transparent 50%),
+      linear-gradient(135deg,#312e81 0%,#4f46e5 50%,#7c3aed 100%);
+    color:#fff;
+    padding:44px 20px 120px;
+    overflow:hidden;
+    isolation:isolate;
+  }
+  header::before,
+  header::after{
+    content:"";
+    position:absolute;
+    border-radius:50%;
+    filter:blur(80px);
+    opacity:.5;
+    pointer-events:none;
+    z-index:-1;
+  }
+  header::before{
+    width:520px;height:520px;
+    background:#c084fc;
+    top:-200px;right:-120px;
+    animation:float1 18s ease-in-out infinite;
+  }
+  header::after{
+    width:420px;height:420px;
+    background:#38bdf8;
+    bottom:-200px;left:-100px;
+    animation:float2 22s ease-in-out infinite;
+  }
+  @keyframes float1{
+    0%,100%{transform:translate(0,0) scale(1)}
+    50%{transform:translate(-40px,40px) scale(1.1)}
+  }
+  @keyframes float2{
+    0%,100%{transform:translate(0,0) scale(1)}
+    50%{transform:translate(60px,-30px) scale(1.15)}
+  }
+  header .grid-overlay{
+    position:absolute;inset:0;pointer-events:none;opacity:.14;
+    background-image:
+      linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(ellipse at top, black 20%, transparent 75%);
+    -webkit-mask-image:radial-gradient(ellipse at top, black 20%, transparent 75%);
+  }
+
+  .head-inner{max-width:1180px;margin:0 auto;position:relative;z-index:2}
+
+  .brand{
+    display:inline-flex;align-items:center;gap:10px;
+    font-weight:700;letter-spacing:.08em;font-size:12px;
+    text-transform:uppercase;
+    padding:8px 14px 8px 12px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.24);
+    border-radius:999px;
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+  }
+  .brand .dot{
+    width:8px;height:8px;border-radius:50%;background:#4ade80;
+    box-shadow:0 0 0 3px rgba(74,222,128,.35), 0 0 12px rgba(74,222,128,.9);
+    animation:pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:.7;transform:scale(.9)}
+  }
+
+  h1{
+    font-size:clamp(28px,4.4vw,46px);
+    font-weight:800;
+    margin-top:22px;
+    letter-spacing:-.035em;
+    line-height:1.08;
+    background:linear-gradient(120deg,#fff 0%,#e0e7ff 60%,#c7d2fe 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{
+    margin-top:14px;
+    font-size:16px;
+    line-height:1.6;
+    max-width:640px;
+    color:rgba(255,255,255,.82);
+  }
+  header p b{color:#fff;font-weight:700}
+
+  /* =========================================================
+     MAIN
+     ========================================================= */
+  main{max-width:1180px;margin:0 auto;padding:0 20px 90px}
+  .shell{margin-top:-72px;position:relative;z-index:5}
+
+  /* ---------- STATUS BAR ---------- */
+  .loaded{
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:18px 22px;
+    box-shadow:var(--shadow-lg);
+    border:1px solid var(--line);
+    animation:slideIn .45s cubic-bezier(.2,.7,.3,1) both;
+  }
+  @keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+  .loaded .ok{
+    width:44px;height:44px;border-radius:13px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    font-size:19px;font-weight:800;
+    background:linear-gradient(135deg,#d1fae5,#a7f3d0);
+    color:#059669;
+    box-shadow:0 6px 14px -6px rgba(16,185,129,.55), inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .loaded.loading .ok{
+    background:linear-gradient(135deg,#e0e7ff,#c7d2fe);
+    color:#4f46e5;
+    box-shadow:0 6px 14px -6px rgba(79,70,229,.55), inset 0 1px 0 rgba(255,255,255,.6);
+    animation:spinIcon 1.6s linear infinite;
+  }
+  @keyframes spinIcon{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+  .loaded .txt{flex:1;min-width:220px}
+  .loaded .txt b{
+    font-size:14.5px;font-weight:700;color:var(--ink);
+    letter-spacing:-.01em;
+    font-family:'Plus Jakarta Sans',sans-serif;
+  }
+  .loaded .txt small{
+    display:block;color:var(--muted);font-size:12.5px;
+    margin-top:4px;line-height:1.55;
+  }
+  .loaded .txt small b{color:var(--accent);font-weight:700;font-size:12.5px;font-family:inherit}
+
+  .btn{
+    border:0;cursor:pointer;font-family:inherit;font-weight:600;font-size:13.5px;
+    padding:11px 18px;border-radius:12px;transition:.2s;
+    letter-spacing:-.005em;
+  }
+  .btn-ghost{background:#f1f5f9;color:#475569}
+  .btn-ghost:hover{background:#e2e8f0;color:#0f172a;transform:translateY(-1px)}
+
+  /* ---------- UPLOAD DROP ---------- */
+  .drop{
+    position:relative;
+    background:var(--card);
+    border:1.5px dashed #c7d2fe;
+    border-radius:var(--radius-lg);
+    padding:52px 32px;
+    text-align:center;
+    cursor:pointer;
+    box-shadow:var(--shadow-xl);
+    transition:transform .25s cubic-bezier(.2,.7,.3,1), border-color .25s, background .25s, box-shadow .25s;
+    overflow:hidden;
+    margin-top:20px;
+  }
+  .drop::before{
+    content:"";
+    position:absolute;inset:0;
+    background:radial-gradient(600px 200px at 50% 0%, rgba(79,70,229,.06), transparent 70%);
+    opacity:0;transition:opacity .3s;
+    pointer-events:none;
+  }
+  .drop:hover, .drop.hover{
+    border-color:var(--accent);
+    background:#fafaff;
+    transform:translateY(-4px);
+    box-shadow:0 30px 80px -30px rgba(79,70,229,.45), 0 0 0 6px rgba(79,70,229,.06);
+  }
+  .drop:hover::before, .drop.hover::before{opacity:1}
+
+  .drop .ic{
+    position:relative;
+    width:76px;height:76px;border-radius:22px;margin:0 auto 22px;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#a855f7 100%);
+    color:#fff;font-size:30px;
+    box-shadow:0 20px 40px -14px rgba(99,102,241,.75), inset 0 1px 0 rgba(255,255,255,.25);
+    transition:transform .35s cubic-bezier(.2,.7,.3,1);
+  }
+  .drop:hover .ic{transform:translateY(-4px) rotate(-4deg) scale(1.05)}
+  .drop .ic::after{
+    content:"";
+    position:absolute;inset:-6px;border-radius:26px;
+    background:linear-gradient(135deg,rgba(99,102,241,.35),rgba(168,85,247,.35));
+    filter:blur(16px);z-index:-1;opacity:.7;
+  }
+
+  .drop h2{font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+  .drop p{font-size:14.5px;color:var(--muted);line-height:1.6;max-width:520px;margin:10px auto 0}
+  .drop small{
+    display:inline-block;margin-top:20px;
+    font-size:11.5px;font-weight:600;color:var(--accent);
+    background:var(--accent-soft);
+    padding:7px 14px;border-radius:999px;
+    letter-spacing:.02em;
+  }
+  #fileInput{display:none}
+
+  /* ---------- NOTICE ---------- */
+  .notice{
+    margin-top:20px;padding:16px 20px;border-radius:16px;
+    background:linear-gradient(120deg,#fff7ed,#ffedd5);
+    border:1px solid #fed7aa;
+    color:#7c2d12;
+    font-size:13.5px;line-height:1.6;
+    display:flex;gap:14px;align-items:flex-start;
+    box-shadow:0 6px 20px -12px rgba(234,88,12,.35);
+    animation:slideIn .45s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .notice .icon{
+    width:34px;height:34px;border-radius:10px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    background:#fff;font-size:17px;
+    box-shadow:0 4px 10px -4px rgba(234,88,12,.4);
+  }
+  .notice b{color:#431407;font-weight:700;display:block;margin-bottom:3px;font-size:14px}
+  .notice p{font-size:13px;color:#7c2d12;line-height:1.55}
+  .notice ul{margin:6px 0 0 18px;padding:0;font-size:12.5px}
+  .notice li{margin-bottom:2px;font-family:'JetBrains Mono',monospace}
+
+  /* ---------- SEARCH ---------- */
+  .search-box{
+    display:flex;align-items:center;gap:14px;margin-top:20px;
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:10px 12px 10px 20px;
+    box-shadow:var(--shadow-lg);
+    border:1px solid var(--line);
+    transition:box-shadow .25s, border-color .25s;
+  }
+  .search-box:focus-within{
+    border-color:#c7d2fe;
+    box-shadow:0 0 0 5px rgba(79,70,229,.10), 0 22px 50px -22px rgba(79,70,229,.35);
+  }
+  .search-box svg{flex:none;color:var(--muted-2)}
+  #search{
+    flex:1;border:0;outline:0;background:transparent;
+    font-size:16.5px;font-family:inherit;font-weight:500;
+    color:var(--ink);padding:15px 0;min-width:0;
+    letter-spacing:-.005em;
+  }
+  #search::placeholder{color:#a8b3c4;font-weight:400}
+  #clear{
+    border:0;cursor:pointer;flex:none;
+    width:40px;height:40px;border-radius:12px;
+    background:#f1f5f9;color:#64748b;font-size:15px;line-height:1;
+    display:none;align-items:center;justify-content:center;
+    transition:.18s;
+  }
+  #clear:hover{background:#e2e8f0;color:#0f172a;transform:rotate(90deg)}
+  #clear.show{display:flex}
+
+  /* ---------- FILTERS ROW ---------- */
+  .filters{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    margin-top:18px;
+  }
+  .filter-label{
+    font-size:11px;font-weight:800;letter-spacing:.1em;
+    color:var(--muted-2);text-transform:uppercase;
+    margin-right:4px;
+  }
+  .year-btn{
+    font-size:12.5px;font-weight:700;
+    color:#475569;background:var(--card);
+    border:1px solid var(--line);
+    padding:8px 15px;border-radius:999px;
+    cursor:pointer;transition:.18s;
+    user-select:none;
+    letter-spacing:-.005em;
+    box-shadow:var(--shadow-sm);
+    display:inline-flex;align-items:center;gap:7px;
+  }
+  .year-btn .badge{
+    font-size:10.5px;font-weight:800;
+    padding:2px 7px;border-radius:6px;
+    background:#f1f5f9;color:#64748b;
+  }
+  .year-btn:hover{
+    border-color:#c7d2fe;
+    color:var(--accent);
+    transform:translateY(-1px);
+    box-shadow:0 6px 16px -8px rgba(79,70,229,.35);
+  }
+  .year-btn.active{
+    color:#fff;
+    background:linear-gradient(120deg,var(--accent),var(--accent-2));
+    border-color:transparent;
+    box-shadow:0 8px 18px -8px rgba(79,70,229,.8);
+  }
+  .year-btn.active .badge{
+    background:rgba(255,255,255,.22);
+    color:#fff;
+  }
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .chip{
+    font-size:12.5px;font-weight:600;
+    color:#475569;background:var(--card);
+    border:1px solid var(--line);
+    padding:8px 15px;border-radius:999px;
+    cursor:pointer;transition:.18s;
+    user-select:none;
+    letter-spacing:-.005em;
+    box-shadow:var(--shadow-sm);
+  }
+  .chip:hover{
+    border-color:#c7d2fe;
+    color:var(--accent);
+    background:var(--accent-soft);
+    transform:translateY(-1px);
+    box-shadow:0 6px 16px -8px rgba(79,70,229,.35);
+  }
+
+  /* ---------- STATS ---------- */
+  .stats{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0 4px}
+  .stats > div{
+    display:flex;align-items:center;gap:10px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px 16px;
+    font-size:13px;color:var(--muted);
+    font-weight:500;
+    box-shadow:var(--shadow-sm);
+    transition:.2s;
+  }
+  .stats > div:hover{
+    border-color:#dbe3f3;
+    transform:translateY(-1px);
+    box-shadow:var(--shadow-md);
+  }
+  .stats b{
+    color:var(--ink);font-weight:800;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:15px;letter-spacing:-.02em;
+  }
+
+  /* ---------- WARN ---------- */
+  .warn{
+    margin-top:16px;padding:14px 18px;border-radius:14px;
+    background:linear-gradient(120deg,#fffbeb,#fef3c7);
+    border:1px solid #fcd34d;color:#78350f;
+    font-size:13px;line-height:1.55;
+    display:flex;gap:12px;align-items:flex-start;
+    box-shadow:0 6px 20px -12px rgba(245,158,11,.4);
+  }
+  .warn::before{content:"⚠";font-size:18px;line-height:1;flex:none}
+  .warn b{color:#451a03;font-weight:700}
+
+  /* ---------- SECTION TITLE ---------- */
+  .section-title{
+    display:flex;align-items:baseline;justify-content:space-between;
+    margin:32px 4px 18px;gap:12px;flex-wrap:wrap;
+  }
+  .section-title h2{font-size:17px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+  .section-title span{font-size:13px;color:var(--muted);font-weight:500}
+
+  /* ---------- GRID ---------- */
+  .grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
+
+  /* ---------- CARD ---------- */
+  .card{
+    position:relative;
+    background:var(--card);
+    border-radius:var(--radius);
+    border:1px solid var(--line);
+    box-shadow:var(--shadow-md);
+    overflow:hidden;
+    animation:pop .38s cubic-bezier(.2,.7,.3,1) both;
+    transition:transform .28s cubic-bezier(.2,.7,.3,1), box-shadow .28s, border-color .28s;
+  }
+  .card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 22px 50px -22px rgba(15,23,42,.28), 0 4px 10px -4px rgba(15,23,42,.06);
+    border-color:#dde3f0;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+
+  .card-top{
+    display:flex;align-items:center;gap:15px;
+    padding:20px 20px 18px;
+    background:
+      radial-gradient(400px 100px at 0% 0%, rgba(99,102,241,.05), transparent 70%),
+      linear-gradient(160deg,#fbfcfe,#f4f6fb);
+    border-bottom:1px solid var(--line-2);
+  }
+  .avatar{
+    flex:none;width:54px;height:54px;border-radius:16px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-weight:800;font-size:17px;color:#fff;letter-spacing:.02em;
+    background:linear-gradient(135deg,#6366f1,#a855f7);
+    box-shadow:0 10px 22px -10px rgba(99,102,241,.9), inset 0 1px 0 rgba(255,255,255,.2);
+    transition:transform .3s;
+  }
+  .card:hover .avatar{transform:scale(1.05) rotate(-3deg)}
+  .avatar.f{
+    background:linear-gradient(135deg,#ec4899,#f472b6);
+    box-shadow:0 10px 22px -10px rgba(236,72,153,.9), inset 0 1px 0 rgba(255,255,255,.2);
+  }
+  .avatar.m{
+    background:linear-gradient(135deg,#3b82f6,#06b6d4);
+    box-shadow:0 10px 22px -10px rgba(59,130,246,.9), inset 0 1px 0 rgba(255,255,255,.2);
+  }
+
+  .who{min-width:0;flex:1}
+  .who h3{
+    font-size:16px;font-weight:800;letter-spacing:-.015em;
+    color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .who .sub{
+    margin-top:5px;font-size:12.5px;color:var(--muted);font-weight:500;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+
+  .meta-tags{
+    display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex:none;
+  }
+  .sex{
+    font-size:10.5px;font-weight:800;letter-spacing:.08em;
+    padding:5px 10px;border-radius:8px;
+    font-family:'Plus Jakarta Sans',sans-serif;
+  }
+  .sex.f{background:var(--f-soft);color:var(--f)}
+  .sex.m{background:var(--m-soft);color:var(--m)}
+
+  .year-tag{
+    font-size:10.5px;font-weight:800;letter-spacing:.04em;
+    padding:5px 10px;border-radius:8px;
+    font-family:'Plus Jakarta Sans',sans-serif;
+  }
+  .year-tag.y2{background:var(--y2-soft);color:#0369a1}
+  .year-tag.y3{background:var(--y3-soft);color:#b45309}
+  .year-tag.y4{background:var(--y4-soft);color:#047857}
+
+  .dup{
+    display:inline-block;margin-left:8px;
+    font-size:10px;font-weight:800;letter-spacing:.06em;
+    background:#fef3c7;color:#92400e;
+    padding:3px 8px;border-radius:6px;
+    vertical-align:middle;
+  }
+
+  .rows{
+    padding:18px 20px 6px;
+    display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;
+  }
+  .row .lab{
+    font-size:10px;text-transform:uppercase;letter-spacing:.1em;
+    color:var(--muted-2);font-weight:800;margin-bottom:5px;
+  }
+  .row .val{
+    font-size:13.5px;font-weight:600;color:var(--ink-2);
+    word-break:break-word;letter-spacing:-.005em;
+  }
+  .row .val.mono{
+    font-family:'JetBrains Mono',ui-monospace,monospace;
+    font-size:12.8px;
+    letter-spacing:0;
+    color:var(--ink);
+  }
+  .row.full{grid-column:1 / -1}
+
+  .highlight{
+    margin:16px 20px 0;padding:14px 16px;border-radius:14px;
+    background:
+      radial-gradient(300px 80px at 0% 50%, rgba(99,102,241,.10), transparent 70%),
+      linear-gradient(120deg,#eef2ff,#f5f3ff);
+    border:1px solid #e0e7ff;
+    display:flex;align-items:center;gap:14px;
+  }
+  .highlight .ic{
+    width:36px;height:36px;border-radius:11px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    background:#fff;font-size:17px;
+    box-shadow:0 4px 12px -4px rgba(79,70,229,.35);
+  }
+  .highlight .t{
+    font-size:10px;text-transform:uppercase;letter-spacing:.1em;
+    color:#818cf8;font-weight:800;margin-bottom:2px;
+  }
+  .highlight .v{
+    font-size:14.5px;font-weight:800;color:#3730a3;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    letter-spacing:-.01em;
+  }
+
+  .roommates{padding:18px 20px 20px}
+  .roommates .h{
+    font-size:10px;text-transform:uppercase;letter-spacing:.1em;
+    color:var(--muted-2);font-weight:800;margin-bottom:11px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .roommates .h span:last-child{
+    background:#f1f5f9;color:#64748b;
+    padding:2px 8px;border-radius:6px;
+    font-size:11px;font-weight:700;
+  }
+  .rm-list{display:flex;flex-wrap:wrap;gap:7px}
+  .rm{
+    font-size:12px;font-weight:600;color:#475569;
+    background:#f8fafc;border:1px solid #eef2f7;
+    padding:6px 11px;border-radius:9px;
+    cursor:pointer;transition:.18s;
+    letter-spacing:-.005em;
+  }
+  .rm:hover{
+    background:var(--accent-soft);
+    border-color:#c7d2fe;
+    color:var(--accent);
+    transform:translateY(-1px);
+  }
+
+  /* ---------- EMPTY ---------- */
+  .empty{
+    text-align:center;padding:80px 24px;color:var(--muted);
+    background:var(--card);
+    border:1.5px dashed var(--line);
+    border-radius:var(--radius-lg);
+    grid-column:1 / -1;
+  }
+  .empty .emoji{font-size:52px;display:inline-block;margin-bottom:18px;filter:grayscale(.1)}
+  .empty h3{color:var(--ink);font-size:19px;font-weight:800;margin-bottom:8px;letter-spacing:-.02em}
+  .empty p{font-size:14.5px;line-height:1.6;max-width:440px;margin:0 auto}
+
+  /* ---------- FOOTER ---------- */
+  footer{text-align:center;color:var(--muted-2);font-size:12.5px;padding:40px 20px 50px;font-weight:500}
+
+  .hidden{display:none !important}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:640px){
+    header{padding:32px 18px 106px}
+    h1{margin-top:18px}
+    main{padding:0 16px 70px}
+    .shell{margin-top:-64px}
+    .drop{padding:40px 20px}
+    .drop .ic{width:64px;height:64px;font-size:26px;margin-bottom:18px}
+    .drop h2{font-size:19px}
+    .rows{grid-template-columns:1fr}
+    .grid{grid-template-columns:1fr}
+    .stats > div{padding:10px 14px;font-size:12.5px}
+    .search-box{padding:8px 10px 8px 16px;gap:10px}
+    #search{font-size:16px;padding:13px 0}
+    .loaded{padding:16px 18px;gap:14px}
+  }
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+  #search:focus-visible{outline:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="grid-overlay"></div>
+  <div class="head-inner">
+    <div class="brand"><span class="dot"></span> Dormitory Search</div>
+    <h1>Student Dormitory<br>Placement Search</h1>
+    <p>Search any student by <b>Student ID</b>, name, department, block or dorm. Data loads automatically from the <b>datas/</b> folder.</p>
+  </div>
+</header>
+
+<main>
+  <div class="shell">
+
+    <!-- Loading state -->
+    <div id="uploadPanel" class="loaded loading">
+      <div class="ok">↻</div>
+      <div class="txt">
+        <b id="loadingTitle">Loading student data…</b>
+        <small id="loadingSub">Reading CSV files from the datas folder.</small>
+      </div>
+    </div>
+
+    <!-- Notice (friendly fallback) -->
+    <div id="noticeBox" class="notice hidden">
+      <div class="icon">📄</div>
+      <div>
+        <b id="noticeTitle">Some student files could not be found</b>
+        <p id="noticeText"></p>
+      </div>
+    </div>
+
+    <!-- Upload drop (hidden until needed) -->
+    <div id="dropPanel" class="hidden">
+      <div class="drop" id="dropZone">
+        <div class="ic">📄</div>
+        <h2>Upload your CSV files</h2>
+        <p>Drag your placement files here, or click to browse. They will be read locally in your browser.</p>
+        <small>or click to browse &middot; .csv files only</small>
+      </div>
+      <input type="file" id="fileInput" accept=".csv,text/csv" multiple>
+    </div>
+
+    <!-- Loaded bar -->
+    <div id="loadedPanel" class="loaded hidden">
+      <div class="ok">✓</div>
+      <div class="txt">
+        <b id="loadedTitle">Data loaded</b>
+        <small id="loadedSub"></small>
+      </div>
+      <button class="btn btn-ghost" id="reloadBtn">Load different files</button>
+    </div>
+
+    <!-- Search -->
+    <div id="searchPanel" class="hidden">
+      <div class="search-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="search" type="text" placeholder="Enter Student ID, e.g. ETS0029/18" autocomplete="off" spellcheck="false">
+        <button id="clear" title="Clear">✕</button>
+      </div>
+
+      <div class="filters" id="yearFilters">
+        <span class="filter-label">Year</span>
+        <!-- year buttons built dynamically -->
+      </div>
+
+      <div class="chips" id="quickChips"></div>
+      <div class="stats" id="stats"></div>
+      <div id="warnBox"></div>
+    </div>
+
+    <div class="section-title hidden" id="resHeader">
+      <h2 id="resTitle">Search Results</h2>
+      <span id="resCount"></span>
+    </div>
+
+    <div id="results"></div>
+  </div>
+</main>
+
+<footer>Data is read entirely in your browser — nothing is uploaded to any server.</footer>
+
+<script>
+/* =========================================================
+   CSV PARSER
+   ========================================================= */
+function parseCSV(text){
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for(let i = 0; i < text.length; i++){
+    const c = text[i];
+    if(inQuotes){
+      if(c === '"'){
+        if(text[i+1] === '"'){ field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else {
+      if(c === '"') inQuotes = true;
+      else if(c === ','){ row.push(field); field = ''; }
+      else if(c === '\n'){ row.push(field); rows.push(row); row = []; field = ''; }
+      else if(c === '\r'){ /* skip */ }
+      else field += c;
+    }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
+
+/* =========================================================
+   AUTO-LOAD CONFIG
+   =========================================================
+   All six files live inside the "datas" folder next to this HTML.
+   Filenames must match exactly (including spaces).
+   ========================================================= */
+const DATA_FILES = [
+  { path: 'datas/2nd male.csv',   year: 2, sex: 'M' },
+  { path: 'datas/2nd female.csv', year: 2, sex: 'F' },
+  { path: 'datas/3rd male.csv',   year: 3, sex: 'M' },
+  { path: 'datas/3rd female.csv', year: 3, sex: 'F' },
+  { path: 'datas/4th male.csv',   year: 4, sex: 'M' },
+  { path: 'datas/4th female.csv', year: 4, sex: 'F' }
+];
+
+/* =========================================================
+   STATE
+   ========================================================= */
+let students = [];        // all records (with .year added)
+let rooms = {};           // block|dorm|sex -> [students]
+let dupIds = new Set();   // duplicate Student IDs
+let fileInfo = [];        // [{name, count, year, sex}]
+let activeYear = 'all';   // 'all' | 2 | 3 | 4
+
+/* =========================================================
+   DOM
+   ========================================================= */
+const uploadPanel  = document.getElementById('uploadPanel');
+const noticeBox    = document.getElementById('noticeBox');
+const noticeTitle  = document.getElementById('noticeTitle');
+const noticeText   = document.getElementById('noticeText');
+const dropPanel    = document.getElementById('dropPanel');
+const dropZone     = document.getElementById('dropZone');
+const fileInput    = document.getElementById('fileInput');
+const loadedPanel  = document.getElementById('loadedPanel');
+const searchPanel  = document.getElementById('searchPanel');
+const resHeader    = document.getElementById('resHeader');
+const loadedTitle  = document.getElementById('loadedTitle');
+const loadedSub    = document.getElementById('loadedSub');
+const loadingTitle = document.getElementById('loadingTitle');
+const loadingSub   = document.getElementById('loadingSub');
+const reloadBtn    = document.getElementById('reloadBtn');
+const input        = document.getElementById('search');
+const clearBtn     = document.getElementById('clear');
+const results      = document.getElementById('results');
+const resCount     = document.getElementById('resCount');
+const resTitle     = document.getElementById('resTitle');
+const statsEl      = document.getElementById('stats');
+const chipsEl      = document.getElementById('quickChips');
+const warnBox      = document.getElementById('warnBox');
+const yearFilters  = document.getElementById('yearFilters');
+
+/* =========================================================
+   AUTO-LOAD
+   ========================================================= */
+async function autoLoadAll(){
+  students = [];
+  fileInfo = [];
+
+  const missing = [];
+  let loadedCount = 0;
+
+  for(const entry of DATA_FILES){
+    try {
+      const res = await fetch(entry.path, { cache: 'no-store' });
+      if(!res.ok){ missing.push(entry.path); continue; }
+
+      const text = await res.text();
+      const parsed = parseCSV(text);
+      const added = ingestRows(parsed, entry.path, entry.year);
+
+      if(added > 0){
+        fileInfo.push({ name: entry.path, count: added, year: entry.year, sex: entry.sex });
+        loadedCount++;
+      }
+    } catch(err){
+      missing.push(entry.path);
+    }
+  }
+
+  if(students.length === 0){
+    // Nothing loaded — show fallback upload UI
+    showUploadFallback(missing);
+    return;
+  }
+
+  buildIndex();
+  showLoaded(missing);
+}
+
+/* =========================================================
+   MANUAL UPLOAD (fallback)
+   ========================================================= */
+dropZone.addEventListener('click', () => fileInput.click());
+reloadBtn.addEventListener('click', () => fileInput.click());
+
+fileInput.addEventListener('change', e => {
+  if(e.target.files.length) handleFiles(e.target.files);
+  fileInput.value = '';
+});
+
+['dragenter','dragover'].forEach(ev =>
+  dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('hover'); })
+);
+['dragleave','drop'].forEach(ev =>
+  dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.remove('hover'); })
+);
+dropZone.addEventListener('drop', e => {
+  const files = [...e.dataTransfer.files].filter(f => /\.csv$/i.test(f.name));
+  if(files.length) handleFiles(files);
+  else alert('Please drop .csv files only.');
+});
+
+async function handleFiles(fileList){
+  const files = [...fileList].filter(f => /\.csv$/i.test(f.name));
+  if(!files.length){ alert('Please choose .csv files.'); return; }
+
+  students = [];
+  fileInfo = [];
+
+  try {
+    for(const file of files){
+      const text = await file.text();
+      const parsed = parseCSV(text);
+
+      // Try to guess year & sex from filename (e.g. "3rd male.csv")
+      const info = guessFromName(file.name);
+      const added = ingestRows(parsed, file.name, info.year, info.sex);
+
+      if(added > 0){
+        fileInfo.push({ name: file.name, count: added, year: info.year, sex: info.sex });
+      }
+    }
+
+    if(!students.length) throw new Error('no-records');
+
+    buildIndex();
+    showLoaded([]);
+
+  } catch(err){
+    noticeTitle.textContent = "We couldn't read those files";
+    noticeText.innerHTML =
+      "The file(s) didn't contain the expected columns " +
+      "(<b>Student ID</b>, <b>First Name</b>, <b>Department</b>, <b>Block</b>, <b>Dorm</b>). " +
+      "Please check the files and try again.";
+    noticeBox.classList.remove('hidden');
+    dropPanel.classList.remove('hidden');
+    loadedPanel.classList.add('hidden');
+    searchPanel.classList.add('hidden');
+    resHeader.classList.add('hidden');
+  }
+}
+
+/* Guess year & sex from filename */
+function guessFromName(name){
+  const n = name.toLowerCase();
+  let year = null;
+  if(/\b2(nd)?\b/.test(n)) year = 2;
+  else if(/\b3(rd)?\b/.test(n)) year = 3;
+  else if(/\b4(th)?\b/.test(n)) year = 4;
+  const sex = /\bfemale\b/.test(n) ? 'F' : /\bmale\b/.test(n) ? 'M' : null;
+  return { year, sex };
+}
+
+/* =========================================================
+   ROW INGESTION
+   ========================================================= */
+function ingestRows(parsed, sourceName, yearHint, sexHint){
+  if(!parsed || !parsed.length) return 0;
+
+  // Find header row
+  let headerIdx = -1;
+  for(let i = 0; i < Math.min(parsed.length, 5); i++){
+    const joined = parsed[i].map(c => c.trim().toLowerCase()).join('|');
+    if(joined.includes('student id')){ headerIdx = i; break; }
+  }
+  if(headerIdx === -1) headerIdx = 0;
+
+  const header = parsed[headerIdx].map(h => h.trim().toLowerCase());
+  const idx = name => header.findIndex(h => h === name);
+  const col = {
+    id:     idx('student id'),
+    first:  idx('first name'),
+    father: idx('father name'),
+    g:      idx('gfather name'),
+    sex:    idx('sex'),
+    dept:   idx('department'),
+    block:  idx('block'),
+    dorm:   idx('dorm')
+  };
+
+  let added = 0;
+  for(let r = headerIdx + 1; r < parsed.length; r++){
+    const cells = parsed[r];
+    const get = k => (col[k] >= 0 ? (cells[col[k]] || '').trim() : '');
+    const id = get('id');
+    if(!id) continue;
+
+    const sex = (get('sex') || sexHint || '').toUpperCase();
+
+    students.push({
+      id,
+      first:  get('first'),
+      father: get('father'),
+      gfather:get('g'),
+      sex,
+      dept:   get('dept'),
+      block:  get('block'),
+      dorm:   get('dorm'),
+      full:   `${get('first')} ${get('father')} ${get('g')}`.trim(),
+      source: sourceName,
+      year:   yearHint || null
+    });
+    added++;
+  }
+  return added;
+}
+
+/* =========================================================
+   INDEX + DUPLICATE DETECTION
+   ========================================================= */
+function buildIndex(){
+  rooms = {};
+  const idCount = {};
+  students.forEach(s => {
+    const key = `${s.block}|${s.dorm}|${s.sex}`;
+    (rooms[key] = rooms[key] || []).push(s);
+    idCount[s.id] = (idCount[s.id] || 0) + 1;
+  });
+  dupIds = new Set(Object.keys(idCount).filter(k => idCount[k] > 1));
+}
+
+/* =========================================================
+   SHOW LOADED
+   ========================================================= */
+function showLoaded(missing){
+  uploadPanel.classList.add('hidden');
+  loadedPanel.classList.remove('hidden');
+  searchPanel.classList.remove('hidden');
+  resHeader.classList.remove('hidden');
+
+  if(missing && missing.length){
+    noticeBox.classList.remove('hidden');
+    noticeTitle.textContent = `${missing.length} file${missing.length > 1 ? 's' : ''} could not be loaded`;
+    noticeText.innerHTML =
+      'The rest of the data loaded fine. Missing files:' +
+      '<ul>' + missing.map(p => `<li>${escapeHtml(p)}</li>`).join('') + '</ul>';
+  } else {
+    noticeBox.classList.add('hidden');
+  }
+
+  const total = students.length;
+  loadedTitle.textContent = `${total.toLocaleString()} student record${total === 1 ? '' : 's'} loaded`;
+  loadedSub.textContent = fileInfo.map(f =>
+    `${f.name} · ${f.count} rows`
+  ).join('  •  ');
+
+  const depts   = new Set(students.map(s => s.dept).filter(Boolean));
+  const roomSet = new Set(students.map(s => s.block + '|' + s.dorm));
+  const fem     = students.filter(s => s.sex === 'F').length;
+  const mal     = students.filter(s => s.sex === 'M').length;
+
+  statsEl.innerHTML = `
+    <div>🎓 <b>${total.toLocaleString()}</b> students</div>
+    <div>📚 <b>${depts.size}</b> departments</div>
+    <div>🏠 <b>${roomSet.size}</b> rooms</div>
+    <div>♀ <b>${fem}</b> &nbsp;·&nbsp; ♂ <b>${mal}</b></div>
+  `;
+
+  if(dupIds.size){
+    warnBox.innerHTML = `<div class="warn"><div>
+      <b>${dupIds.size} duplicate Student ID${dupIds.size > 1 ? 's' : ''} detected in the source files.</b>
+      Affected records are marked with a “DUPLICATE” badge below.
+    </div></div>`;
+  } else {
+    warnBox.innerHTML = '';
+  }
+
+  buildYearFilters();
+  buildQuickChips();
+
+  runSearch();
+  input.focus();
+}
+
+function buildYearFilters(){
+  // Count students per year
+  const counts = { 2:0, 3:0, 4:0 };
+  students.forEach(s => { if(s.year) counts[s.year]++; });
+
+  const years = [2,3,4].filter(y => counts[y] > 0);
+  yearFilters.innerHTML = '<span class="filter-label">Year</span>';
+
+  // "All" button
+  const allBtn = makeYearBtn('All', students.length, 'all');
+  yearFilters.appendChild(allBtn);
+
+  years.forEach(y => {
+    yearFilters.appendChild(makeYearBtn(
+      y + (y === 2 ? 'nd' : y === 3 ? 'rd' : 'th') + ' Year',
+      counts[y],
+      y
+    ));
+  });
+}
+
+function makeYearBtn(label, count, value){
+  const btn = document.createElement('button');
+  btn.className = 'year-btn' + (activeYear === value ? ' active' : '');
+  btn.innerHTML = `${label} <span class="badge">${count}</span>`;
+  btn.onclick = () => {
+    activeYear = value;
+    buildYearFilters();
+    runSearch();
+  };
+  return btn;
+}
+
+function buildQuickChips(){
+  chipsEl.innerHTML = '';
+  const deptCount = {};
+  students.forEach(s => { if(s.dept) deptCount[s.dept] = (deptCount[s.dept] || 0) + 1; });
+  const topDepts = Object.entries(deptCount).sort((a,b) => b[1]-a[1]).slice(0, 6).map(e => e[0]);
+  const blocks = [...new Set(students.map(s => s.block).filter(Boolean))].slice(0, 4);
+  [...topDepts, ...blocks].forEach(q => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = q;
+    b.onclick = () => { input.value = q; runSearch(); };
+    chipsEl.appendChild(b);
+  });
+}
+
+/* =========================================================
+   FRIENDLY FALLBACK
+   ========================================================= */
+function showUploadFallback(missing){
+  uploadPanel.classList.add('hidden');
+  noticeBox.classList.remove('hidden');
+  dropPanel.classList.remove('hidden');
+  loadedPanel.classList.add('hidden');
+  searchPanel.classList.add('hidden');
+  resHeader.classList.add('hidden');
+
+  noticeTitle.textContent = "Couldn't load the student data automatically";
+  noticeText.innerHTML =
+    'No CSV files were found in the <b>datas</b> folder. ' +
+    'Please upload the placement files below to continue.' +
+    (missing && missing.length
+      ? '<ul>' + missing.map(p => `<li>${escapeHtml(p)}</li>`).join('') + '</ul>'
+      : '');
+}
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function initials(name){
+  const p = name.trim().split(/\s+/);
+  return ((p[0]?.[0] || '') + (p[1]?.[0] || '')).toUpperCase() || '?';
+}
+
+/* =========================================================
+   SEARCH + RENDER
+   ========================================================= */
+function runSearch(){
+  const q = input.value.trim().toUpperCase();
+  clearBtn.classList.toggle('show', q.length > 0);
+
+  // Apply year filter
+  let pool = students;
+  if(activeYear !== 'all'){
+    pool = students.filter(s => s.year === activeYear);
+  }
+
+  if(!q){
+    resTitle.textContent = activeYear === 'all' ? 'All students' : `Year ${activeYear} students`;
+    resCount.textContent = pool.length.toLocaleString();
+    const LIMIT = 80;
+    const shown = pool.slice(0, LIMIT);
+    results.innerHTML = `<div class="grid">${shown.map(renderCard).join('')}</div>` +
+      (pool.length > LIMIT
+        ? `<p style="text-align:center;color:#94a3b8;font-size:13px;margin-top:22px">
+             Showing first ${LIMIT} of ${pool.length.toLocaleString()} — type to narrow down.
+           </p>` : '');
+    wireChips();
+    return;
+  }
+
+  const found = pool.filter(s =>
+    s.id.toUpperCase().includes(q) ||
+    s.full.toUpperCase().includes(q) ||
+    s.dept.toUpperCase().includes(q) ||
+    s.dorm.toUpperCase().includes(q) ||
+    s.block.toUpperCase().includes(q)
+  );
+
+  resTitle.textContent = `Results for “${input.value.trim()}”` +
+    (activeYear !== 'all' ? ` (Year ${activeYear})` : '');
+  resCount.textContent = found.length
+    ? `${found.length} match${found.length > 1 ? 'es' : ''}`
+    : '';
+
+  if(!found.length){
+    results.innerHTML = `
+      <div class="empty">
+        <div class="emoji">🔍</div>
+        <h3>No student found</h3>
+        <p>Nothing matched <b>${escapeHtml(input.value.trim())}</b>. Try a shorter part of the ID or a different keyword.</p>
+      </div>`;
+    return;
+  }
+
+  const LIMIT = 80;
+  const shown = found.slice(0, LIMIT);
+  results.innerHTML = `<div class="grid">${shown.map(renderCard).join('')}</div>` +
+    (found.length > LIMIT
+      ? `<p style="text-align:center;color:#94a3b8;font-size:13px;margin-top:22px">
+           Showing first ${LIMIT} of ${found.length} — refine your search.
+         </p>` : '');
+  wireChips();
+}
+
+function wireChips(){
+  results.querySelectorAll('.rm[data-id]').forEach(el => {
+    el.addEventListener('click', () => {
+      input.value = el.dataset.id;
+      runSearch();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+function renderCard(s){
+  const roommates = rooms[`${s.block}|${s.dorm}|${s.sex}`] || [];
+  const others = roommates.filter(r => !(r.id === s.id && r.dept === s.dept && r.block === s.block));
+
+  const rmHtml = others.length
+    ? others.map(r =>
+        `<span class="rm" data-id="${escapeHtml(r.id)}" title="${escapeHtml(r.id)}">${escapeHtml(r.first || r.id)}</span>`
+      ).join('')
+    : `<span style="font-size:12.5px;color:#94a3b8">No other students assigned to this room.</span>`;
+
+  const dupBadge = dupIds.has(s.id) ? `<span class="dup">DUPLICATE ID</span>` : '';
+  const sexClass = s.sex === 'F' ? 'f' : s.sex === 'M' ? 'm' : '';
+  const yearClass = s.year === 2 ? 'y2' : s.year === 3 ? 'y3' : s.year === 4 ? 'y4' : '';
+  const yearLabel = s.year ? `${s.year}${s.year === 2 ? 'nd' : s.year === 3 ? 'rd' : 'th'}` : '';
+
+  return `
+  <article class="card">
+    <div class="card-top">
+      <div class="avatar ${sexClass}">${escapeHtml(initials(s.full || s.id))}</div>
+      <div class="who">
+        <h3>${escapeHtml(s.full || '(no name)')}${dupBadge}</h3>
+        <div class="sub">${escapeHtml(s.dept || '—')}</div>
+      </div>
+      <div class="meta-tags">
+        ${s.year ? `<span class="year-tag ${yearClass}">${yearLabel}</span>` : ''}
+        ${s.sex ? `<span class="sex ${sexClass}">${escapeHtml(s.sex)}</span>` : ''}
+      </div>
+    </div>
+
+    <div class="rows">
+      <div class="row">
+        <div class="lab">Student ID</div>
+        <div class="val mono">${escapeHtml(s.id)}</div>
+      </div>
+      <div class="row">
+        <div class="lab">Sex</div>
+        <div class="val">${s.sex === 'F' ? 'Female' : s.sex === 'M' ? 'Male' : escapeHtml(s.sex || '—')}</div>
+      </div>
+      <div class="row full">
+        <div class="lab">Department</div>
+        <div class="val">${escapeHtml(s.dept || '—')}</div>
+      </div>
+      <div class="row">
+        <div class="lab">Father Name</div>
+        <div class="val">${escapeHtml(s.father || '—')}</div>
+      </div>
+      <div class="row">
+        <div class="lab">Grandfather Name</div>
+        <div class="val">${escapeHtml(s.gfather || '—')}</div>
+      </div>
+    </div>
+
+    <div class="highlight">
+      <span class="ic">🏠</span>
+      <div>
+        <div class="t">Assigned Room</div>
+        <div class="v">Block ${escapeHtml(s.block || '—')} &nbsp;·&nbsp; ${escapeHtml(s.dorm || '—')}</div>
+      </div>
+    </div>
+
+    <div class="roommates">
+      <div class="h"><span>Roommates</span><span>${others.length}</span></div>
+      <div class="rm-list">${rmHtml}</div>
+    </div>
+  </article>`;
+}
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+let timer;
+input.addEventListener('input', () => {
+  clearTimeout(timer);
+  timer = setTimeout(runSearch, 130);
+});
+input.addEventListener('keydown', e => {
+  if(e.key === 'Enter'){ clearTimeout(timer); runSearch(); }
+});
+clearBtn.addEventListener('click', () => {
+  input.value = '';
+  input.focus();
+  runSearch();
+});
+
+/* Boot */
+autoLoadAll();
+</script>
+</body>
+</html>
